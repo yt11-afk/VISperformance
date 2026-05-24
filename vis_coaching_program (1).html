@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIS — The Coaching Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Epilogue:wght@200;300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:     #0c0b09;
+  --ink-2:   #161412;
+  --ink-3:   #1f1d1a;
+  --ink-4:   #2a2724;
+  --warm:    #f7f3ee;
+  --warm-2:  #ede8e1;
+  --muted:   rgba(247,243,238,0.55);
+  --faint:   rgba(247,243,238,0.22);
+  --gold:    #c9a96e;
+  --gold-l:  #e2c898;
+  --gold-d:  #9a7a4a;
+  --purple:  #6b5fe0;
+  --purple-l:#9b8ff0;
+  --teal:    #2ab08a;
+  --coral:   #e07060;
+  --border:  rgba(201,169,110,0.18);
+  --border2: rgba(247,243,238,0.07);
+  --serif:   'Cormorant Garamond', serif;
+  --sans:    'Epilogue', sans-serif;
+  --mono:    'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--warm);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── CURSOR ── */
+* { cursor: none !important; }
+.cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.25s, height 0.25s, opacity 0.25s;
+  mix-blend-mode: difference;
+}
+.cursor.big { width: 40px; height: 40px; opacity: 0.4; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.4rem 3.5rem;
+  background: linear-gradient(to bottom, rgba(12,11,9,0.97) 0%, transparent 100%);
+  backdrop-filter: blur(2px);
+}
+.logo { font-family: var(--serif); font-size: 1.4rem; font-weight: 500; letter-spacing: 0.25em; color: var(--gold); text-decoration: none; }
+.logo span { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); font-family: var(--sans); font-weight: 300; display: block; margin-top: -4px; }
+.nav-links { display: flex; gap: 2.5rem; align-items: center; }
+.nav-link { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.nav-link:hover { color: var(--gold); }
+.nav-btn {
+  font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink); background: var(--gold); border: none;
+  padding: 0.6rem 1.4rem; font-family: var(--sans);
+  transition: background 0.2s;
+}
+.nav-btn:hover { background: var(--gold-l); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 0 3.5rem 6rem;
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 80% 20%, rgba(107,95,224,0.1), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 80%, rgba(201,169,110,0.07), transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(42,176,138,0.04), transparent 50%);
+}
+.hero-lines {
+  position: absolute; inset: 0; overflow: hidden; opacity: 0.04;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 79px, var(--warm) 79px, var(--warm) 80px);
+}
+.hero-eyebrow {
+  font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 1.5rem;
+  opacity: 0; animation: up 0.8s ease 0.2s forwards;
+}
+.hero-headline {
+  font-family: var(--serif); font-size: clamp(3rem, 7vw, 6.5rem);
+  font-weight: 300; line-height: 0.95; letter-spacing: -0.02em;
+  max-width: 900px; margin-bottom: 2.5rem;
+  opacity: 0; animation: up 0.8s ease 0.35s forwards;
+}
+.hero-headline em { font-style: italic; color: var(--gold-l); }
+.hero-headline .line2 { padding-left: 6rem; display: block; }
+.hero-headline .line3 { padding-left: 12rem; display: block; }
+.hero-sub {
+  font-size: 1rem; color: var(--muted); max-width: 480px; line-height: 1.8;
+  margin-bottom: 3rem;
+  opacity: 0; animation: up 0.8s ease 0.5s forwards;
+}
+.hero-ctas {
+  display: flex; gap: 1.25rem; flex-wrap: wrap;
+  opacity: 0; animation: up 0.8s ease 0.65s forwards;
+}
+.btn-gold {
+  font-family: var(--sans); font-size: 0.78rem; font-weight: 400;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  background: var(--gold); color: var(--ink);
+  border: none; padding: 1rem 2.2rem;
+  text-decoration: none; display: inline-block;
+  transition: background 0.25s, transform 0.2s;
+}
+.btn-gold:hover { background: var(--gold-l); transform: translateY(-2px); }
+.btn-ghost {
+  font-family: var(--sans); font-size: 0.78rem; font-weight: 400;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 1rem 2.2rem; text-decoration: none; display: inline-block;
+  transition: border-color 0.25s, color 0.25s;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.hero-scroll {
+  position: absolute; right: 3.5rem; bottom: 6rem;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; animation: up 0.8s ease 0.9s forwards;
+}
+.scroll-line { width: 1px; height: 60px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+.scroll-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); writing-mode: vertical-rl; }
+
+/* ── SECTION BASICS ── */
+.section { padding: 8rem 3.5rem; position: relative; }
+.inner { max-width: 1100px; margin: 0 auto; }
+.sl { font-size: 0.65rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+.sh { font-family: var(--serif); font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 300; line-height: 1.15; margin-bottom: 1.5rem; }
+.sh em { font-style: italic; color: var(--gold-l); }
+
+/* ── TIER CARDS ── */
+.tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 3rem; }
+.tier {
+  background: var(--ink-2); padding: 2.5rem 2rem;
+  position: relative; overflow: hidden; transition: background 0.3s;
+}
+.tier:hover { background: var(--ink-3); }
+.tier::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.tier-1::before { background: var(--teal); }
+.tier-2::before { background: var(--purple); }
+.tier-3::before { background: var(--gold); }
+.tier-num {
+  font-family: var(--serif); font-size: 5rem; font-weight: 300;
+  color: rgba(247,243,238,0.04); line-height: 1;
+  position: absolute; top: 1rem; right: 1.5rem;
+  letter-spacing: -0.05em;
+}
+.tier-badge {
+  display: inline-block; font-size: 0.62rem; font-weight: 400;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 20px; margin-bottom: 1.25rem;
+}
+.tier-1 .tier-badge { background: rgba(42,176,138,0.12); color: var(--teal); }
+.tier-2 .tier-badge { background: rgba(107,95,224,0.12); color: var(--purple-l); }
+.tier-3 .tier-badge { background: rgba(201,169,110,0.12); color: var(--gold); }
+.tier-name {
+  font-family: var(--serif); font-size: 1.6rem; font-weight: 400;
+  line-height: 1.2; margin-bottom: 0.35rem;
+}
+.tier-price {
+  font-size: 0.8rem; color: var(--muted); margin-bottom: 1.5rem;
+  font-family: var(--mono);
+}
+.tier-price strong { font-size: 1.5rem; color: var(--warm); font-family: var(--serif); font-weight: 300; }
+.tier-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.75; margin-bottom: 1.75rem; }
+.tier-includes { margin-bottom: 2rem; }
+.ti-label { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); margin-bottom: 0.75rem; }
+.ti-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 0.84rem; color: var(--muted); padding: 5px 0;
+  border-bottom: 1px solid var(--border2); line-height: 1.5;
+}
+.ti-item:last-child { border-bottom: none; }
+.ti-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 8px; }
+.tier-1 .ti-dot { background: var(--teal); }
+.tier-2 .ti-dot { background: var(--purple-l); }
+.tier-3 .ti-dot { background: var(--gold); }
+.tier-cta {
+  display: block; text-align: center;
+  font-family: var(--sans); font-size: 0.74rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.85rem; border: 1px solid; text-decoration: none;
+  transition: all 0.25s;
+}
+.tier-1 .tier-cta { border-color: var(--teal); color: var(--teal); }
+.tier-1 .tier-cta:hover { background: var(--teal); color: var(--ink); }
+.tier-2 .tier-cta { border-color: var(--purple-l); color: var(--purple-l); }
+.tier-2 .tier-cta:hover { background: var(--purple); color: var(--warm); }
+.tier-3 .tier-cta { border-color: var(--gold); color: var(--gold); }
+.tier-3 .tier-cta:hover { background: var(--gold); color: var(--ink); }
+
+/* ── CURRICULUM ── */
+.curriculum-wrap { margin-top: 3rem; }
+.phase {
+  border: 1px solid var(--border2); margin-bottom: 1px;
+  position: relative; overflow: hidden;
+}
+.phase-header {
+  display: flex; align-items: center; gap: 1.5rem;
+  padding: 1.5rem 2rem; background: var(--ink-2);
+  cursor: pointer; transition: background 0.2s; user-select: none;
+}
+.phase-header:hover { background: var(--ink-3); }
+.phase-num {
+  font-family: var(--serif); font-size: 2rem; font-weight: 300;
+  color: var(--gold); line-height: 1; flex-shrink: 0; width: 36px;
+}
+.phase-meta { flex: 1; }
+.phase-weeks { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); margin-bottom: 2px; }
+.phase-title { font-size: 1rem; font-weight: 400; color: var(--warm); }
+.phase-arrow { font-size: 0.8rem; color: var(--faint); transition: transform 0.3s; flex-shrink: 0; }
+.phase.open .phase-arrow { transform: rotate(90deg); }
+.phase-body {
+  display: none; padding: 0 2rem 2rem;
+  background: var(--ink-2);
+}
+.phase.open .phase-body { display: block; }
+.week-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 1.25rem; }
+.week-card {
+  background: var(--ink-3); padding: 1rem 1.1rem;
+  border-left: 2px solid var(--border);
+}
+.week-label { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); margin-bottom: 4px; font-family: var(--mono); }
+.week-title { font-size: 0.9rem; font-weight: 400; color: var(--warm); margin-bottom: 4px; }
+.week-body { font-size: 0.8rem; color: var(--muted); line-height: 1.55; }
+.phase-milestone {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 1.25rem; padding: 0.85rem 1rem;
+  background: rgba(201,169,110,0.06); border: 1px solid var(--border);
+  font-size: 0.82rem; color: var(--gold);
+}
+.milestone-icon { font-size: 1rem; }
+
+/* ── MIDPOINT ASSESSMENT ── */
+.midpoint {
+  background: var(--ink-3); border: 1px solid var(--border);
+  padding: 2rem; margin: 2rem 0; position: relative; overflow: hidden;
+}
+.midpoint::before {
+  content: 'Day 45';
+  position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%);
+  font-family: var(--serif); font-size: 5rem; font-weight: 300;
+  color: rgba(201,169,110,0.06); line-height: 1; pointer-events: none;
+}
+.midpoint-badge {
+  display: inline-block; font-size: 0.62rem; letter-spacing: 0.18em;
+  text-transform: uppercase; background: rgba(107,95,224,0.12);
+  color: var(--purple-l); padding: 3px 10px; border-radius: 20px; margin-bottom: 0.75rem;
+}
+.midpoint h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; margin-bottom: 0.5rem; }
+.midpoint p { font-size: 0.86rem; color: var(--muted); line-height: 1.7; max-width: 600px; }
+.midpoint-metrics { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.25rem; }
+.mm { background: var(--ink-4); padding: 0.75rem 1rem; flex: 1; min-width: 150px; }
+.mm-label { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--faint); margin-bottom: 3px; }
+.mm-val { font-family: var(--serif); font-size: 1.1rem; color: var(--warm); }
+
+/* ── INTAKE FRAMEWORK ── */
+.intake-wrap { margin-top: 3rem; }
+.intake-step {
+  display: flex; gap: 1.5rem; padding: 1.75rem 0;
+  border-bottom: 1px solid var(--border2);
+}
+.intake-step:last-child { border-bottom: none; }
+.intake-num {
+  font-family: var(--serif); font-size: 2.5rem; font-weight: 300;
+  color: rgba(201,169,110,0.2); line-height: 1; flex-shrink: 0; width: 50px;
+}
+.intake-content { flex: 1; }
+.intake-title { font-size: 0.94rem; font-weight: 400; color: var(--warm); margin-bottom: 4px; }
+.intake-desc { font-size: 0.84rem; color: var(--muted); line-height: 1.65; margin-bottom: 0.75rem; }
+.intake-q { font-size: 0.8rem; color: var(--muted); padding: 5px 10px; background: var(--ink-3); border-left: 2px solid var(--border); margin: 4px 0; font-style: italic; }
+.intake-time { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--faint); font-family: var(--mono); }
+
+/* ── PRIVATE TIER DETAIL ── */
+.private-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+.private-cell { background: var(--ink-2); padding: 1.75rem 2rem; }
+.private-cell:hover { background: var(--ink-3); transition: background 0.2s; }
+.pc-label { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+.pc-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; margin-bottom: 0.5rem; }
+.pc-body { font-size: 0.84rem; color: var(--muted); line-height: 1.65; }
+
+/* ── PRICING COMPARISON ── */
+.compare { margin-top: 3rem; overflow-x: auto; }
+.compare-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.compare-table th {
+  font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--faint); font-weight: 400; padding: 0.75rem 1rem;
+  text-align: left; border-bottom: 1px solid var(--border);
+}
+.compare-table th:not(:first-child) { text-align: center; }
+.compare-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border2); color: var(--muted); }
+.compare-table td:not(:first-child) { text-align: center; }
+.compare-table tr:last-child td { border-bottom: none; }
+.check { color: var(--teal); font-size: 1rem; }
+.dash { color: var(--faint); }
+.col-hl { background: rgba(107,95,224,0.05); }
+
+/* ── BOOK CALL ── */
+.book-section {
+  padding: 8rem 3.5rem; text-align: center;
+  background: var(--ink-2); position: relative; overflow: hidden;
+}
+.book-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(107,95,224,0.08), transparent 65%);
+  pointer-events: none;
+}
+.book-eyebrow { font-size: 0.65rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+.book-headline { font-family: var(--serif); font-size: clamp(2rem, 5vw, 4.5rem); font-weight: 300; line-height: 1.1; max-width: 700px; margin: 0 auto 1.5rem; }
+.book-headline em { font-style: italic; color: var(--gold-l); }
+.book-sub { font-size: 0.92rem; color: var(--muted); max-width: 440px; margin: 0 auto 3rem; line-height: 1.8; }
+.book-form { max-width: 420px; margin: 0 auto; }
+.book-input-group { display: flex; border: 1px solid var(--border); background: rgba(255,255,255,0.03); margin-bottom: 10px; }
+.book-input-group input {
+  flex: 1; padding: 0.9rem 1.2rem; background: transparent;
+  border: none; outline: none; color: var(--warm);
+  font-family: var(--sans); font-size: 0.88rem; font-weight: 300;
+}
+.book-input-group input::placeholder { color: var(--faint); }
+.book-input-group select {
+  flex: 1; padding: 0.9rem 1.2rem; background: transparent;
+  border: none; outline: none; color: var(--warm);
+  font-family: var(--sans); font-size: 0.88rem; font-weight: 300;
+  -webkit-appearance: none;
+}
+.book-input-group select option { background: var(--ink-3); }
+.book-submit {
+  width: 100%; background: var(--gold); color: var(--ink); border: none;
+  padding: 1rem; font-family: var(--sans); font-size: 0.78rem;
+  font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  transition: background 0.25s; margin-top: 4px;
+}
+.book-submit:hover { background: var(--gold-l); }
+.book-note { font-size: 0.72rem; color: var(--faint); margin-top: 0.75rem; }
+.book-success {
+  display: none; padding: 1.25rem;
+  background: rgba(42,176,138,0.1); border: 1px solid rgba(42,176,138,0.25);
+  color: #5dd4aa; font-size: 0.88rem; margin-top: 1rem;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 2rem 3.5rem; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+}
+footer p { font-size: 0.74rem; color: var(--faint); }
+footer a { font-size: 0.74rem; color: var(--gold); text-decoration: none; margin-left: 1.5rem; }
+
+/* ── ANIMATIONS ── */
+@keyframes up { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+@keyframes scrollPulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+.reveal { opacity:0; transform:translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  nav { padding:1rem 1.5rem; }
+  .nav-links { display:none; }
+  .hero { padding:0 1.5rem 5rem; }
+  .hero-headline .line2 { padding-left:2rem; }
+  .hero-headline .line3 { padding-left:4rem; }
+  .section { padding:5rem 1.5rem; }
+  .two-col { grid-template-columns:1fr; }
+  .private-grid { grid-template-columns:1fr; }
+  .book-section { padding:5rem 1.5rem; }
+  footer { padding:1.75rem 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">VIS <span>Performance</span></a>
+  <div class="nav-links">
+    <a href="#tiers" class="nav-link">Programs</a>
+    <a href="#curriculum" class="nav-link">Curriculum</a>
+    <a href="#private" class="nav-link">Private</a>
+    <a href="#book" class="nav-btn">Book a call</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <p class="hero-eyebrow">The VIS Coaching Program</p>
+  <h1 class="hero-headline">
+    The pattern
+    <em><span class="line2">has a name.</span></em>
+    <span class="line3">Now we rewire it.</span>
+  </h1>
+  <p class="hero-sub">Three tiers. One framework. Built on a decade of Inside Out performance coaching — applied to the moment that has always mattered most: the one where you know exactly what to do, and can't.</p>
+  <div class="hero-ctas">
+    <a href="#tiers" class="btn-gold">See the programs</a>
+    <a href="#book" class="btn-ghost">Book a pattern conversation</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span class="scroll-label">Scroll</span>
+  </div>
+</section>
+
+<!-- TIERS -->
+<section class="section" id="tiers">
+  <div class="inner">
+    <p class="sl reveal">Three entry points</p>
+    <h2 class="sh reveal">Choose your depth of work.</h2>
+    <p class="reveal" style="font-size:0.92rem;color:var(--muted);max-width:520px;margin-bottom:0;">Every tier begins with the same question: which pattern is running you right now? The answer determines everything that follows.</p>
+
+    <div class="tiers reveal">
+
+      <!-- TIER 1 -->
+      <div class="tier tier-1">
+        <div class="tier-num">I</div>
+        <span class="tier-badge">Entry point</span>
+        <p class="tier-name">The Pattern Report</p>
+        <p class="tier-price"><strong>$5.99</strong> &nbsp;one-time</p>
+        <p class="tier-desc">8 questions. 4 minutes. A complete pattern anatomy delivered immediately — with your dominant pattern named, your trigger mapped, and a 60-second interrupt you can use today.</p>
+        <div class="tier-includes">
+          <p class="ti-label">What's included</p>
+          <div class="ti-item"><div class="ti-dot"></div><span>Full pattern identification across 8 behavioral dimensions</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>AI-personalized pattern anatomy — trigger, expression, core belief</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Your 60-second real-time interrupt protocol</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Secondary pattern identification</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Visual pattern profile across all 8 dimensions</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>30-day rewiring priority roadmap</span></div>
+        </div>
+        <a href="#book" class="tier-cta">Get the report — $5.99</a>
+      </div>
+
+      <!-- TIER 2 -->
+      <div class="tier tier-2">
+        <div class="tier-num">II</div>
+        <span class="tier-badge">Most popular</span>
+        <p class="tier-name">The 90-Day Protocol</p>
+        <p class="tier-price"><strong>$29</strong> &nbsp;/ month</p>
+        <p class="tier-desc">The pattern was named in the report. Now it gets rewired. A structured 90-day system of weekly drills, pattern tracking, and a midpoint reassessment — designed to install the new response at the identity level.</p>
+        <div class="tier-includes">
+          <p class="ti-label">What's included</p>
+          <div class="ti-item"><div class="ti-dot"></div><span>Weekly pattern drill — one practice, 5–10 minutes, delivered by email</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Full access to the interrupt library for all 8 patterns</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Day 45 midpoint reassessment — track your pattern shift in real data</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Day 90 final reassessment — before/after pattern comparison</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>VIS Performance Dispatch — weekly data insights</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Cancel anytime — no contracts</span></div>
+        </div>
+        <a href="#book" class="tier-cta">Start the protocol — $29/mo</a>
+      </div>
+
+      <!-- TIER 3 -->
+      <div class="tier tier-3">
+        <div class="tier-num">III</div>
+        <span class="tier-badge">Private coaching</span>
+        <p class="tier-name">Inside Out Private</p>
+        <p class="tier-price"><strong>By application</strong></p>
+        <p class="tier-desc">One-on-one work for the executive, athlete, or founder who needs the full Inside Out framework applied directly to their specific performance context. Limited availability.</p>
+        <div class="tier-includes">
+          <p class="ti-label">What's included</p>
+          <div class="ti-item"><div class="ti-dot"></div><span>Deep pattern diagnostic session — 90 minutes</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Custom intervention design for your specific context</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Bi-weekly private 1-on-1 sessions</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Real-time support between sessions</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>Full 90-Day Protocol included</span></div>
+          <div class="ti-item"><div class="ti-dot"></div><span>On-court or in-field performance integration (where applicable)</span></div>
+        </div>
+        <a href="#book" class="tier-cta">Apply for private coaching</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CURRICULUM -->
+<section class="section" id="curriculum" style="background:var(--ink-2);">
+  <div class="inner">
+    <p class="sl reveal">The 90-day protocol</p>
+    <h2 class="sh reveal">Week by week. <em>Pattern by pattern.</em></h2>
+    <p class="reveal" style="font-size:0.9rem;color:var(--muted);max-width:540px;margin-bottom:0.5rem;">Three phases. Each one builds on the last. The architecture is designed so that by day 90, the interrupt isn't a technique you're applying — it's the way you naturally operate.</p>
+
+    <div class="midpoint reveal">
+      <span class="midpoint-badge">Midpoint reassessment</span>
+      <h3>Day 45 — You retake the assessment.</h3>
+      <p>Not to grade yourself. To see the data. Your pattern scores at day 45 are compared directly against your original report — showing you exactly where the pattern has shifted, where it's held its ground, and what the second half of the protocol needs to address. This is the moment most clients describe as the first time they believed the work was real.</p>
+      <div class="midpoint-metrics">
+        <div class="mm"><p class="mm-label">What's measured</p><p class="mm-val">Pattern intensity shift</p></div>
+        <div class="mm"><p class="mm-label">Format</p><p class="mm-val">Same 8-question assessment</p></div>
+        <div class="mm"><p class="mm-label">Delivery</p><p class="mm-val">Comparative report by email</p></div>
+        <div class="mm"><p class="mm-label">Adjusts</p><p class="mm-val">Phase 3 drill focus</p></div>
+      </div>
+    </div>
+
+    <div class="curriculum-wrap reveal">
+
+      <!-- PHASE 1 -->
+      <div class="phase open">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-num">1</div>
+          <div class="phase-meta">
+            <p class="phase-weeks">Weeks 1–4 · Days 1–28</p>
+            <p class="phase-title">Recognition — Name the pattern before it names you</p>
+          </div>
+          <span class="phase-arrow">▶</span>
+        </div>
+        <div class="phase-body">
+          <p style="font-size:0.85rem;color:var(--muted);line-height:1.7;max-width:600px;">The first phase is entirely about visibility. You cannot interrupt a pattern you can't see. Every drill in weeks 1–4 is designed to make the pattern observable in real time — so you catch it in the moment rather than recognizing it three hours later in retrospect.</p>
+          <div class="week-grid">
+            <div class="week-card" style="border-color:var(--teal);">
+              <p class="week-label">Week 1</p>
+              <p class="week-title">Pattern Mapping</p>
+              <p class="week-body">Daily 3-minute log — one moment the pattern fired, what triggered it, what you did. No analysis yet. Just noticing. The goal is raw data.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--teal);">
+              <p class="week-label">Week 2</p>
+              <p class="week-title">Trigger Identification</p>
+              <p class="week-body">Identify the three recurring triggers specific to your pattern. Narrow from "high stakes" to precise: which person, which situation, which internal feeling precedes the loop.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--teal);">
+              <p class="week-label">Week 3</p>
+              <p class="week-title">Body Signal Awareness</p>
+              <p class="week-body">The body activates before the mind knows. Map the exact physical signal — jaw, shoulders, breathing, stomach — that fires 2–3 seconds before the pattern takes over. That signal is your interrupt window.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--teal);">
+              <p class="week-label">Week 4</p>
+              <p class="week-title">The Quiet Version</p>
+              <p class="week-body">Identify where the pattern runs at low intensity — not the detonation, the daily tax. This is the version that costs 15–20% of your performance every day without announcing itself.</p>
+            </div>
+          </div>
+          <div class="phase-milestone">
+            <span class="milestone-icon">◈</span>
+            Phase 1 milestone: You can name your pattern in real time, within 3 seconds of activation, at least 70% of the time.
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 2 -->
+      <div class="phase">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-num">2</div>
+          <div class="phase-meta">
+            <p class="phase-weeks">Weeks 5–9 · Days 29–63</p>
+            <p class="phase-title">Interruption — Stop the loop before it completes</p>
+          </div>
+          <span class="phase-arrow">▶</span>
+        </div>
+        <div class="phase-body">
+          <p style="font-size:0.85rem;color:var(--muted);line-height:1.7;max-width:600px;">The second phase installs the interrupt. This is not a breathing exercise you remember in theory. This is a practiced, physical, automatic response that fires from the body signal you identified in Phase 1. Weeks 5–9 are about drilling the interrupt until it becomes reflexive.</p>
+          <div class="week-grid">
+            <div class="week-card" style="border-color:var(--purple-l);">
+              <p class="week-label">Week 5</p>
+              <p class="week-title">The Physiological Reset</p>
+              <p class="week-body">Your pattern-specific 60-second interrupt, practiced daily in low-stakes contexts. The principle: you rehearse the reset when calm so the nervous system can access it when triggered.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--purple-l);">
+              <p class="week-label">Week 6</p>
+              <p class="week-title">Posture and Presence</p>
+              <p class="week-body">Every pattern has a physical posture. The Pressure Collapse contracts. The Approval Authority shrinks. This week you build the opposite — the physical architecture of the performer you're becoming.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--purple-l);">
+              <p class="week-label">Week 7</p>
+              <p class="week-title">Language Reframe</p>
+              <p class="week-body">The belief underneath your pattern speaks in specific language. This week you identify that exact language and install a replacement — not an affirmation, but a precise cognitive reframe that your nervous system accepts.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--purple-l);">
+              <p class="week-label">Week 8</p>
+              <p class="week-title">Live Application — Low Stakes</p>
+              <p class="week-body">Take the interrupt into real performance contexts — deliberate practice settings where the trigger fires but failure costs little. Tennis drills, practice meetings, controlled pressure scenarios.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--purple-l);">
+              <p class="week-label">Week 9 + Day 45</p>
+              <p class="week-title">Midpoint Reassessment</p>
+              <p class="week-body">Retake the full 8-question assessment. Receive your comparative report. See the pattern score shift in real numbers. Phase 3 is calibrated to what the data shows.</p>
+            </div>
+          </div>
+          <div class="phase-milestone">
+            <span class="milestone-icon">◈</span>
+            Phase 2 milestone: You successfully apply the interrupt in a real performance context at least once per week for three consecutive weeks.
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 3 -->
+      <div class="phase">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-num">3</div>
+          <div class="phase-meta">
+            <p class="phase-weeks">Weeks 10–13 · Days 64–90</p>
+            <p class="phase-title">Rewiring — Install the new identity</p>
+          </div>
+          <span class="phase-arrow">▶</span>
+        </div>
+        <div class="phase-body">
+          <p style="font-size:0.85rem;color:var(--muted);line-height:1.7;max-width:600px;">The final phase moves from managing the pattern to replacing it. The interrupt was the bridge. Rewiring is the destination. This phase builds the identity-level architecture of who you are becoming — not who you're trying to stop being.</p>
+          <div class="week-grid">
+            <div class="week-card" style="border-color:var(--gold);">
+              <p class="week-label">Week 10</p>
+              <p class="week-title">Identity Statement</p>
+              <p class="week-body">Build a precise identity statement calibrated to your specific pattern and your vision of performance. Not an affirmation. A statement of who you already are becoming, grounded in evidence from the past 9 weeks.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--gold);">
+              <p class="week-label">Week 11</p>
+              <p class="week-title">High-Stakes Application</p>
+              <p class="week-body">Intentionally seek the triggering context. Competition, high-stakes meetings, pressure scenarios. Apply the interrupt and identity anchor in real time. Document what changes.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--gold);">
+              <p class="week-label">Week 12</p>
+              <p class="week-title">Secondary Pattern</p>
+              <p class="week-body">Your secondary pattern — identified in the original report — now gets specific attention. Patterns travel in pairs. Addressing only the dominant one leaves the secondary pattern as a back door.</p>
+            </div>
+            <div class="week-card" style="border-color:var(--gold);">
+              <p class="week-label">Week 13 + Day 90</p>
+              <p class="week-title">Final Reassessment</p>
+              <p class="week-body">Retake the assessment. Receive your full 90-day before/after comparison — original scores vs. day 45 vs. day 90. This is your data. This is the evidence that the work was real.</p>
+            </div>
+          </div>
+          <div class="phase-milestone">
+            <span class="milestone-icon">◈</span>
+            Phase 3 milestone: At day 90, your dominant pattern score has shifted measurably from your baseline. You have a documented before/after report.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PRIVATE TIER DETAIL -->
+<section class="section" id="private">
+  <div class="inner">
+    <p class="sl reveal">Tier III — Inside Out Private</p>
+    <h2 class="sh reveal">For the performer who needs the <em>full framework</em> applied directly.</h2>
+    <p class="reveal" style="font-size:0.92rem;color:var(--muted);max-width:560px;">Private coaching is not the 90-Day Protocol with more touchpoints. It is a fundamentally different engagement — built around your specific performance context, your specific pattern combination, and the specific high-stakes moments that matter most to you.</p>
+
+    <div class="private-grid reveal">
+      <div class="private-cell">
+        <p class="pc-label">Who it's for</p>
+        <p class="pc-title">The competitive executive tennis player</p>
+        <p class="pc-body">You compete seriously — club leagues, USTA tournaments, private ladder — and you also run a company, close deals, or lead teams. Your pattern fires in both arenas. The work happens in both arenas simultaneously. The court is the laboratory. The boardroom is the proof.</p>
+      </div>
+      <div class="private-cell">
+        <p class="pc-label">Who it's for</p>
+        <p class="pc-title">The high-stakes founder or senior executive</p>
+        <p class="pc-body">You're at a performance inflection point — a fundraise, a leadership transition, a critical year. The pattern has been manageable until now. The stakes just changed. You need the framework applied to your specific context with precision, not a generic curriculum.</p>
+      </div>
+      <div class="private-cell">
+        <p class="pc-label">Who it's for</p>
+        <p class="pc-title">The serious competitive amateur athlete</p>
+        <p class="pc-body">You play at a level where the difference between your best and your average is almost entirely psychological. You've had technical coaching. You know your strokes. What you haven't had is someone who works on the pattern beneath the technique — the one that fires when the match is close.</p>
+      </div>
+      <div class="private-cell">
+        <p class="pc-label">The structure</p>
+        <p class="pc-title">Diagnostic → Custom design → Live integration</p>
+        <p class="pc-body">Session one is a 90-minute deep pattern diagnostic. Sessions two through twelve are bi-weekly — alternating between pattern work and direct performance integration. Where applicable, on-court sessions bring the framework into real play conditions. Real pressure. Real patterns. Real interrupts.</p>
+      </div>
+      <div class="private-cell">
+        <p class="pc-label">Investment</p>
+        <p class="pc-title">Discussed on the call — by application</p>
+        <p class="pc-body">Private coaching is not right for everyone and not available to everyone. The intake conversation — a 20-minute pattern discussion — determines fit before any investment is discussed. If it's not the right match, you'll know within the first ten minutes.</p>
+      </div>
+      <div class="private-cell">
+        <p class="pc-label">Availability</p>
+        <p class="pc-title">Limited to 6 private clients at a time</p>
+        <p class="pc-body">Private coaching requires real attention. Six clients is the maximum. When those six slots are full, a waitlist opens. If you're considering it, the conversation is the first step — not a commitment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTAKE FRAMEWORK -->
+<section class="section" id="intake" style="background:var(--ink-2);">
+  <div class="inner">
+    <p class="sl reveal">The pattern conversation</p>
+    <h2 class="sh reveal">What happens when <em>you book a call.</em></h2>
+    <p class="reveal" style="font-size:0.92rem;color:var(--muted);max-width:520px;">This is not a sales call. It is a 20-minute pattern conversation — designed to identify where your pattern is currently costing you the most, and which tier of the VIS program is the right fit. You'll leave with something useful regardless of what you decide.</p>
+
+    <div class="intake-wrap reveal">
+      <div class="intake-step">
+        <div class="intake-num">01</div>
+        <div class="intake-content">
+          <p class="intake-title">The opening question — 2 minutes</p>
+          <p class="intake-time">Minutes 1–2</p>
+          <p class="intake-desc">Before anything else, one question is asked and listened to without interruption. The answer reveals more about pattern type, transparency-willingness, and transformation-readiness than any intake form.</p>
+          <div class="intake-q">"Describe a specific recent moment when you performed below what you know you're capable of."</div>
+          <p class="intake-desc" style="margin-top:8px;font-size:0.8rem;">What's listened for: do they describe the internal experience or the external circumstances? Do they say "I" or "they"? Is the moment specific or vague? The answers to those three questions determine the entire direction of the conversation.</p>
+        </div>
+      </div>
+
+      <div class="intake-step">
+        <div class="intake-num">02</div>
+        <div class="intake-content">
+          <p class="intake-title">Pattern confirmation — 5 minutes</p>
+          <p class="intake-time">Minutes 3–7</p>
+          <p class="intake-desc">If they've already taken the assessment, their pattern is confirmed and deepened. If they haven't, a rapid 4-question verbal assessment identifies the dominant pattern live. Either way, the pattern is named before the call is 8 minutes old.</p>
+          <div class="intake-q">"What have you already tried to address this?"</div>
+          <div class="intake-q">"When it fires — what does your body do first?"</div>
+          <div class="intake-q">"How long have you been aware of this?"</div>
+        </div>
+      </div>
+
+      <div class="intake-step">
+        <div class="intake-num">03</div>
+        <div class="intake-content">
+          <p class="intake-title">Stakes and urgency — 5 minutes</p>
+          <p class="intake-time">Minutes 8–12</p>
+          <p class="intake-desc">The cost of the pattern and the urgency of addressing it is established — not to create pressure, but to understand what's actually at stake and what the right depth of work is. This determines which tier is appropriate.</p>
+          <div class="intake-q">"What is coming up in the next 90 days where this pattern will show up?"</div>
+          <div class="intake-q">"What has this pattern already cost you — concretely?"</div>
+          <div class="intake-q">"If nothing changes, what does the next year look like?"</div>
+        </div>
+      </div>
+
+      <div class="intake-step">
+        <div class="intake-num">04</div>
+        <div class="intake-content">
+          <p class="intake-title">The right fit — 5 minutes</p>
+          <p class="intake-time">Minutes 13–17</p>
+          <p class="intake-desc">Based on everything heard, the right tier is recommended — honestly. If the 90-Day Protocol is sufficient, that's what's recommended. If private coaching is the right fit, the structure and investment is discussed. If neither is right, that's said directly.</p>
+          <div class="intake-q">"Based on what you've shared, here's what I think the right next step is — and here's why."</div>
+        </div>
+      </div>
+
+      <div class="intake-step">
+        <div class="intake-num">05</div>
+        <div class="intake-content">
+          <p class="intake-title">The one thing — 3 minutes</p>
+          <p class="intake-time">Minutes 18–20</p>
+          <p class="intake-desc">Every call ends with one specific, immediately applicable interrupt — based on the pattern identified in the conversation. Not a teaser. Not a pitch. A real tool they can use before their next high-stakes moment. This is the proof of the framework's value before any payment is made.</p>
+          <div class="intake-q">"Before we end — here is the one thing you can do in the next 24 hours that will interrupt this pattern."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="section">
+  <div class="inner">
+    <p class="sl reveal">What's in each tier</p>
+    <h2 class="sh reveal">Side by side.</h2>
+
+    <div class="compare reveal">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:35%;">Feature</th>
+            <th>Pattern Report<br><span style="font-family:var(--mono);font-size:0.75rem;color:var(--teal);">$5.99</span></th>
+            <th class="col-hl">90-Day Protocol<br><span style="font-family:var(--mono);font-size:0.75rem;color:var(--purple-l);">$29/mo</span></th>
+            <th>Private Coaching<br><span style="font-family:var(--mono);font-size:0.75rem;color:var(--gold);">Application</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Pattern identification (8 dimensions)</td><td><span class="check">✓</span></td><td class="col-hl"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>AI-personalized pattern report</td><td><span class="check">✓</span></td><td class="col-hl"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>60-second interrupt protocol</td><td><span class="check">✓</span></td><td class="col-hl"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Weekly pattern drills (13 weeks)</td><td><span class="dash">—</span></td><td class="col-hl"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Full interrupt library (all 8 patterns)</td><td><span class="dash">—</span></td><td class="col-hl"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Day 45 midpoint reassessment</td><td><span class="dash">—</span></td><td class="col-hl"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Day 90 final reassessment + comparison</td><td><span class="dash">—</span></td><td class="col-hl"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>VIS Performance Dispatch (weekly)</td><td><span class="dash">—</span></td><td class="col-hl"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Bi-weekly private 1-on-1 sessions</td><td><span class="dash">—</span></td><td class="col-hl"><span class="dash">—</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Custom intervention design</td><td><span class="dash">—</span></td><td class="col-hl"><span class="dash">—</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>On-court / in-field integration</td><td><span class="dash">—</span></td><td class="col-hl"><span class="dash">—</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>90-minute deep diagnostic session</td><td><span class="dash">—</span></td><td class="col-hl"><span class="dash">—</span></td><td><span class="check">✓</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK CALL -->
+<section class="book-section" id="book">
+  <p class="book-eyebrow">The next step</p>
+  <h2 class="book-headline">Book a <em>pattern conversation.</em></h2>
+  <p class="book-sub">20 minutes. No pitch. You'll leave with your pattern named, your trigger mapped, and one specific interrupt you can use before your next high-stakes moment — regardless of what you decide.</p>
+
+  <div class="book-form">
+    <div class="book-input-group">
+      <input type="text" id="book-name" placeholder="Your name">
+    </div>
+    <div class="book-input-group">
+      <input type="email" id="book-email" placeholder="Your email address">
+    </div>
+    <div class="book-input-group">
+      <select id="book-tier">
+        <option value="" disabled selected>I'm interested in...</option>
+        <option value="report">Pattern Report — $5.99</option>
+        <option value="protocol">90-Day Protocol — $29/month</option>
+        <option value="private">Private Coaching — Application</option>
+        <option value="unsure">Not sure yet — help me decide</option>
+      </select>
+    </div>
+    <div class="book-input-group">
+      <input type="text" id="book-context" placeholder="One sentence: what's the pattern costing you?">
+    </div>
+    <button class="book-submit" onclick="bookCall()">Request a pattern conversation</button>
+    <div class="book-success" id="book-success">
+      ✓ Received. You'll hear back within 24 hours to confirm a time.
+    </div>
+    <p class="book-note">No commitment required. The conversation is free.</p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 VIS Performance. Inside Out Method.</p>
+  <div>
+    <a href="mailto:innovateinsideout@gmail.com">Contact</a>
+    <a href="#">Privacy</a>
+  </div>
+</footer>
+
+<script>
+// Custom cursor
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('a, button, .phase-header').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Phase accordion
+function togglePhase(header) {
+  const phase = header.parentElement;
+  const isOpen = phase.classList.contains('open');
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('open'));
+  if (!isOpen) phase.classList.add('open');
+}
+
+// Book call form
+function bookCall() {
+  const name  = document.getElementById('book-name').value.trim();
+  const email = document.getElementById('book-email').value.trim();
+  const tier  = document.getElementById('book-tier').value;
+  if (!name || !email || !email.includes('@')) {
+    document.getElementById('book-name').style.outline = name ? '' : '1px solid var(--coral)';
+    document.getElementById('book-email').style.outline = (email && email.includes('@')) ? '' : '1px solid var(--coral)';
+    return;
+  }
+  document.querySelector('.book-form').style.opacity = '0.4';
+  document.getElementById('book-success').style.display = 'block';
+  console.log('Booking:', { name, email, tier, context: document.getElementById('book-context').value });
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>
