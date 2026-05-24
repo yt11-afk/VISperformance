@@ -1,0 +1,361 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1.5rem 0 3rem;max-width:680px}
+.prog-bar{height:4px;background:var(--color-background-secondary);border-radius:2px;margin-bottom:2rem}
+.prog-fill{height:4px;border-radius:2px;background:#7F77DD;transition:width .4s ease}
+.q-num{font-size:12px;color:var(--color-text-tertiary);margin-bottom:.5rem;letter-spacing:.05em}
+.q-text{font-size:18px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:1.75rem}
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+.opt{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;cursor:pointer;font-size:14px;color:var(--color-text-secondary);line-height:1.5;text-align:left;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--color-border-secondary);background:var(--color-background-secondary)}
+.opt.sel{border:2px solid #534AB7;background:#EEEDFE;color:#3C3489}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:.5rem}
+.nav-hint{font-size:12px;color:var(--color-text-tertiary)}
+.gate{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center}
+.gate-title{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:.75rem}
+.gate-sub{font-size:14px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.5rem}
+.preview-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem 1.25rem;margin-bottom:1.5rem;text-align:left}
+.preview-label{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:.4rem}
+.preview-val{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:.25rem}
+.preview-blur{font-size:13px;color:transparent;text-shadow:0 0 8px var(--color-text-secondary);user-select:none;line-height:1.5}
+.price-pill{display:inline-block;background:#EEEDFE;color:#3C3489;font-size:13px;font-weight:500;padding:4px 14px;border-radius:20px;margin-bottom:1rem}
+.result-wrap{padding:0}
+.result-header{background:#EEEDFE;border-radius:var(--border-radius-lg);padding:1.5rem;margin-bottom:1.25rem}
+.result-tag{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:#534AB7;margin-bottom:.5rem}
+.result-name{font-size:22px;font-weight:500;color:#26215C;margin-bottom:.5rem}
+.result-sub{font-size:14px;color:#3C3489;line-height:1.5}
+.result-section{margin-bottom:1.25rem}
+.rs-label{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:.6rem}
+.rs-card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:8px}
+.rs-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:.3rem}
+.rs-text{font-size:13px;color:var(--color-text-secondary);line-height:1.5}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{font-size:12px;color:var(--color-text-secondary);width:130px;flex-shrink:0}
+.bar-track{flex:1;height:6px;background:var(--color-background-secondary);border-radius:3px}
+.bar-f{height:6px;border-radius:3px;transition:width .6s ease}
+.upsell{background:var(--color-background-primary);border:2px solid #534AB7;border-radius:var(--border-radius-lg);padding:1.25rem;text-align:center;margin-top:1.25rem}
+.upsell-title{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:.4rem}
+.upsell-sub{font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:1rem}
+</style>
+
+<h2 class="sr-only">VIS Performance Pattern Assessment — discover the invisible pattern holding back your performance</h2>
+
+<div class="wrap" id="app"></div>
+
+<script>
+var questions = [
+  {
+    q: "When you're performing at your best, what does it feel like inside?",
+    opts: [
+      {t:"Calm and clear — everything slows down and I just execute", scores:{composure:3,clarity:1}},
+      {t:"High energy and locked in — almost automatic", scores:{activation:3,trust:1}},
+      {t:"Focused but always slightly on edge, like I could lose it", scores:{anxiety:2,composure:1}},
+      {t:"Honestly, I rarely feel that way consistently", scores:{inconsistency:3}}
+    ]
+  },
+  {
+    q: "What most often derails your performance when the stakes are high?",
+    opts: [
+      {t:"My mind starts running worst-case scenarios", scores:{anxiety:3,rumination:1}},
+      {t:"I overthink the technical details mid-performance", scores:{overthinking:3}},
+      {t:"I tighten up physically — shoulders, jaw, breathing", scores:{somatic:3}},
+      {t:"I suddenly care too much about what others think", scores:{approval:3}}
+    ]
+  },
+  {
+    q: "After a poor performance, what do you typically do?",
+    opts: [
+      {t:"Replay it over and over looking for what went wrong", scores:{rumination:3,anxiety:1}},
+      {t:"Push it down and try not to think about it", scores:{avoidance:3}},
+      {t:"Get angry at myself, then feel bad about getting angry", scores:{selfcriticism:3}},
+      {t:"Analyze it briefly, accept it, and move on fairly quickly", scores:{composure:2,resilience:2}}
+    ]
+  },
+  {
+    q: "Which statement feels most uncomfortably true about you?",
+    opts: [
+      {t:"I know exactly what I should do — I just can't make myself do it", scores:{implementation:3,trust:1}},
+      {t:"I perform well when no one's watching but fall apart under observation", scores:{approval:3,anxiety:1}},
+      {t:"I do well until I'm close to winning — then I find a way to lose", scores:{sabotage:3}},
+      {t:"My performance depends entirely on how I feel that day", scores:{inconsistency:3,somatic:1}}
+    ]
+  },
+  {
+    q: "When you face a really critical moment — a big point, a key meeting, a high-stakes conversation — your first internal move is:",
+    opts: [
+      {t:"Try to calm down by controlling my breathing or self-talk", scores:{anxiety:2,composure:1}},
+      {t:"Go blank — my preparation just disappears", scores:{freeze:3}},
+      {t:"Speed up — rush decisions I would normally make deliberately", scores:{activation:2,anxiety:2}},
+      {t:"Zoom out and assess — I actually tend to get sharper", scores:{composure:3,clarity:2}}
+    ]
+  },
+  {
+    q: "What would a close observer say is your biggest performance blind spot?",
+    opts: [
+      {t:"You're too hard on yourself after mistakes", scores:{selfcriticism:3}},
+      {t:"You play not to lose instead of playing to win", scores:{avoidance:3,approval:1}},
+      {t:"You do great until pressure mounts, then your technique changes", scores:{somatic:2,anxiety:2}},
+      {t:"You're inconsistent — brilliant sometimes, absent others", scores:{inconsistency:3}}
+    ]
+  },
+  {
+    q: "How do you feel about asking for help or showing vulnerability in performance contexts?",
+    opts: [
+      {t:"Uncomfortable — I feel like I should already know how to handle things", scores:{approval:2,selfcriticism:2}},
+      {t:"Fine in private, not in public — I manage my image carefully", scores:{approval:3}},
+      {t:"It depends on who's watching — authority figures make it harder", scores:{approval:3,anxiety:1}},
+      {t:"Pretty comfortable — I see it as information-gathering, not weakness", scores:{composure:2,resilience:2}}
+    ]
+  },
+  {
+    q: "Which of these best describes your relationship with winning and losing?",
+    opts: [
+      {t:"Losing feels like evidence of who I am, not just what happened", scores:{identity:3,selfcriticism:1}},
+      {t:"I need to win to feel okay — I hate how much it affects my mood", scores:{identity:3,anxiety:1}},
+      {t:"I can detach from results — I care about the process more", scores:{composure:2,resilience:2}},
+      {t:"I'm competitive but I recover quickly regardless of outcome", scores:{activation:2,resilience:2}}
+    ]
+  }
+];
+
+var patterns = {
+  anxiety: {
+    name: "The Pressure Collapse Pattern",
+    color: "#FAECE7", textColor: "#712B13", accentColor: "#D85A30",
+    summary: "Your nervous system is running a threat-detection loop in high-stakes moments. You're not weak — your system is over-calibrated for danger.",
+    trigger: "Elevated stakes or perceived judgment",
+    expression: "Racing thoughts, physical tightening, premature decisions",
+    belief: "\"If I fail here, it means something about me.\"",
+    interrupt: "Physiological reset before cognitive reframe — breath first, thought second.",
+    next: "Your pattern is solvable. The VIS Protocol includes a 60-second Pressure Collapse interrupt that high performers use in real-time."
+  },
+  approval: {
+    name: "The Approval Authority Pattern",
+    color: "#EEEDFE", textColor: "#3C3489", accentColor: "#7F77DD",
+    summary: "You perform for an invisible audience. Even when performing alone, part of your attention is managing how you'll be perceived.",
+    trigger: "Authority figures, observation, high visibility",
+    expression: "Hesitation, image management, playing it safe",
+    belief: "\"I need to look like I know what I'm doing.\"",
+    interrupt: "Identity shift before performance — who you ARE, not how you'll look.",
+    next: "The Approval Authority Pattern appears in 67% of executives we've assessed. It's the single biggest hidden tax on performance."
+  },
+  rumination: {
+    name: "The Replay Loop Pattern",
+    color: "#E1F5EE", textColor: "#085041", accentColor: "#1D9E75",
+    summary: "Your error-correction system never fully turns off. You're replaying past performances during current ones, splitting your attention.",
+    trigger: "Mistakes, momentum shifts, comparison to past performance",
+    expression: "Inner commentary, distraction, emotional residue from earlier events",
+    belief: "\"If I understand exactly what went wrong, I can prevent it next time.\"",
+    interrupt: "Pattern interrupt between points/moments — a hard reset ritual, not just a breath.",
+    next: "The Replay Loop is sneaky because it feels productive. The VIS reset protocol targets this specifically."
+  },
+  sabotage: {
+    name: "The Self-Sabotage Threshold Pattern",
+    color: "#FAEEDA", textColor: "#633806", accentColor: "#EF9F27",
+    summary: "You have an unconscious ceiling. When you get close to a significant win, something shifts — and you find a way to give it back.",
+    trigger: "Proximity to success, leading positions, almost-wins",
+    expression: "Unforced errors, distraction, inexplicable execution breakdown",
+    belief: "\"Something at this level doesn't belong to me yet.\"",
+    interrupt: "Pre-ceiling rituals that normalize the discomfort of winning before it hits.",
+    next: "This is the rarest and most important pattern to address. Most coaches never name it."
+  },
+  inconsistency: {
+    name: "The State Dependency Pattern",
+    color: "#E6F1FB", textColor: "#0C447C", accentColor: "#378ADD",
+    summary: "Your performance is hostage to how you feel that day. You haven't yet built a repeatable internal process independent of your emotional weather.",
+    trigger: "Low energy, external disruptions, mood-based starts",
+    expression: "Inconsistent warmup, variable focus, no pre-performance anchor",
+    belief: "\"I can only perform well when conditions are right.\"",
+    interrupt: "A non-negotiable pre-performance state protocol — same every time, regardless of feeling.",
+    next: "State independence is a skill, not a trait. It's trainable with the right framework."
+  },
+  avoidance: {
+    name: "The Avoidance Shield Pattern",
+    color: "#F1EFE8", textColor: "#444441", accentColor: "#888780",
+    summary: "You protect yourself from pain by not fully committing. You stay just safe enough that failure has an excuse.",
+    trigger: "Significant risk, high vulnerability, potential for public failure",
+    expression: "Playing not to lose, holding back, premature disengagement",
+    belief: "\"If I don't fully commit, I can't fully fail.\"",
+    interrupt: "Commitment rituals that close the exit — making the safe option psychologically unavailable.",
+    next: "The Avoidance Shield is almost never recognized as such — it feels like strategy, caution, or realism."
+  },
+  overthinking: {
+    name: "The Analytical Override Pattern",
+    color: "#EEEDFE", textColor: "#3C3489", accentColor: "#534AB7",
+    summary: "Your analytical mind hijacks your body in the moments that require instinct. You've trained hard — but your brain won't let your training take over.",
+    trigger: "Critical moments, technical difficulty, slumps",
+    expression: "Mechanical over-correction, conscious interference with automated skills",
+    belief: "\"If I think harder, I'll execute better.\"",
+    interrupt: "Attention shift from outcome to process anchor — one technical cue only, never two.",
+    next: "The Analytical Override is most common in highly intelligent, coachable performers. Your mind is your strength and your obstacle."
+  },
+  selfcriticism: {
+    name: "The Inner Judge Pattern",
+    color: "#FAECE7", textColor: "#712B13", accentColor: "#D85A30",
+    summary: "You have a harsh internal commentator who treats every mistake as a verdict. It feels like high standards — but it's actually a performance tax.",
+    trigger: "Errors, comparison, visible struggle",
+    expression: "Self-directed anger, shame spirals, motivation crashes after setbacks",
+    belief: "\"I should be better than this. This isn't acceptable.\"",
+    interrupt: "Compassionate competitor framing — how you'd coach your best friend in this moment.",
+    next: "The Inner Judge feels like it keeps you sharp. The data says the opposite — self-compassion outperforms self-criticism in sustained performance."
+  }
+};
+
+var scores = {};
+var answers = [];
+var currentQ = 0;
+var phase = 'intro'; // intro, questions, gate, result
+
+function getTopPattern() {
+  var top = null, topScore = 0;
+  var order = ['sabotage','approval','rumination','anxiety','inconsistency','avoidance','overthinking','selfcriticism'];
+  for (var i=0; i<order.length; i++) {
+    var k = order[i];
+    if ((scores[k]||0) > topScore) { topScore = scores[k]||0; top = k; }
+  }
+  return top || 'inconsistency';
+}
+
+function getSecondPattern() {
+  var top = getTopPattern();
+  var second = null, secondScore = 0;
+  var order = ['sabotage','approval','rumination','anxiety','inconsistency','avoidance','overthinking','selfcriticism'];
+  for (var i=0; i<order.length; i++) {
+    var k = order[i];
+    if (k !== top && (scores[k]||0) > secondScore) { secondScore = scores[k]||0; second = k; }
+  }
+  return second || 'anxiety';
+}
+
+function pct(n) { return Math.min(100, Math.round((n||0) * 14)); }
+
+function render() {
+  var el = document.getElementById('app');
+  if (phase === 'intro') {
+    el.innerHTML = '<div style="padding:1rem 0 2rem;">' +
+      '<p style="font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:.75rem">VIS · Performance Pattern Assessment</p>' +
+      '<h1 style="font-size:26px;font-weight:500;color:var(--color-text-primary);line-height:1.35;margin-bottom:1rem;">Discover the invisible pattern that&#39;s limiting your performance.</h1>' +
+      '<p style="font-size:15px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:.75rem;">8 questions. 4 minutes. One pattern reveal that most performers spend years trying to name.</p>' +
+      '<p style="font-size:14px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:2rem;">Based on the Inside Out Performance framework — grounded in Jungian pattern theory, behavioral neuroscience, and 10+ years of elite coaching.</p>' +
+      '<button onclick="startQ()" style="font-size:15px;padding:12px 28px;">Begin the assessment</button>' +
+    '</div>';
+  } else if (phase === 'questions') {
+    var q = questions[currentQ];
+    var pctDone = Math.round((currentQ / questions.length) * 100);
+    var html = '<div class="prog-bar"><div class="prog-fill" style="width:'+pctDone+'%"></div></div>';
+    html += '<p class="q-num">Question '+(currentQ+1)+' of '+questions.length+'</p>';
+    html += '<p class="q-text">'+q.q+'</p>';
+    html += '<div class="options">';
+    for (var i=0;i<q.opts.length;i++) {
+      var sel = answers[currentQ]===i ? ' sel' : '';
+      html += '<button class="opt'+sel+'" onclick="selectOpt('+i+')">'+q.opts[i].t+'</button>';
+    }
+    html += '</div>';
+    html += '<div class="nav">';
+    if (currentQ > 0) html += '<button onclick="prevQ()" style="font-size:13px;">Back</button>';
+    else html += '<span></span>';
+    if (answers[currentQ] !== undefined) {
+      if (currentQ < questions.length - 1) html += '<button onclick="nextQ()">Next &rarr;</button>';
+      else html += '<button onclick="goGate()">See my preview &rarr;</button>';
+    } else {
+      html += '<span class="nav-hint">Select an answer to continue</span>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  } else if (phase === 'gate') {
+    var top = getTopPattern();
+    var p = patterns[top];
+    el.innerHTML = '<div class="gate">' +
+      '<div style="width:40px;height:40px;border-radius:50%;background:'+p.color+';margin:0 auto 1rem;"></div>' +
+      '<p class="gate-title">Your dominant pattern has been identified.</p>' +
+      '<p class="gate-sub">Based on your answers, you&#39;re running a pattern that shows up in high-stakes moments and quietly limits what&#39;s possible for you. Here&#39;s a partial preview:</p>' +
+      '<div class="preview-box">' +
+        '<p class="preview-label">Your pattern name</p>' +
+        '<p class="preview-val">'+p.name+'</p>' +
+        '<p class="preview-label" style="margin-top:.75rem">What triggers it</p>' +
+        '<p class="preview-blur">'+p.trigger+'</p>' +
+        '<p class="preview-label" style="margin-top:.75rem">The core belief driving it</p>' +
+        '<p class="preview-blur">'+p.belief+'</p>' +
+      '</div>' +
+      '<div class="price-pill">Full report · $8.99</div>' +
+      '<p style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:1.25rem;">Unlock your complete pattern profile: the full trigger map, expression breakdown, real-time interrupt protocol, and your rewiring roadmap.</p>' +
+      '<button onclick="goResult()" style="font-size:15px;padding:12px 28px;margin-bottom:.75rem;">Unlock full report &rarr;</button>' +
+      '<br><button onclick="goResult()" style="font-size:13px;border:none;color:var(--color-text-tertiary);padding:6px;">Preview full report (demo)</button>' +
+    '</div>';
+  } else if (phase === 'result') {
+    var top = getTopPattern();
+    var second = getSecondPattern();
+    var p = patterns[top];
+    var p2 = patterns[second];
+    var topScore = scores[top]||0;
+    var allKeys = Object.keys(scores);
+    var maxScore = 0;
+    for (var k in scores) { if (scores[k]>maxScore) maxScore=scores[k]; }
+
+    el.innerHTML = '<div class="result-wrap">' +
+      '<div class="result-header" style="background:'+p.color+';">' +
+        '<p class="result-tag" style="color:'+p.accentColor+';">Your dominant pattern</p>' +
+        '<p class="result-name" style="color:'+p.textColor+';">'+p.name+'</p>' +
+        '<p class="result-sub" style="color:'+p.textColor+';">'+p.summary+'</p>' +
+      '</div>' +
+
+      '<div class="result-section">' +
+        '<p class="rs-label">Pattern anatomy</p>' +
+        '<div class="rs-card"><p class="rs-title">Trigger</p><p class="rs-text">'+p.trigger+'</p></div>' +
+        '<div class="rs-card"><p class="rs-title">How it expresses</p><p class="rs-text">'+p.expression+'</p></div>' +
+        '<div class="rs-card"><p class="rs-title">The belief underneath</p><p class="rs-text">'+p.belief+'</p></div>' +
+      '</div>' +
+
+      '<div class="result-section">' +
+        '<p class="rs-label">Your pattern profile</p>' +
+        '<div class="bar-row"><span class="bar-label">Approval seeking</span><div class="bar-track"><div class="bar-f" style="width:'+pct(scores.approval||0)+'%;background:#7F77DD;"></div></div></div>' +
+        '<div class="bar-row"><span class="bar-label">Performance anxiety</span><div class="bar-track"><div class="bar-f" style="width:'+pct(scores.anxiety||0)+'%;background:#D85A30;"></div></div></div>' +
+        '<div class="bar-row"><span class="bar-label">Replay / rumination</span><div class="bar-track"><div class="bar-f" style="width:'+pct(scores.rumination||0)+'%;background:#1D9E75;"></div></div></div>' +
+        '<div class="bar-row"><span class="bar-label">Self-sabotage</span><div class="bar-track"><div class="bar-f" style="width:'+pct(scores.sabotage||0)+'%;background:#EF9F27;"></div></div></div>' +
+        '<div class="bar-row"><span class="bar-label">Inconsistency</span><div class="bar-track"><div class="bar-f" style="width:'+pct(scores.inconsistency||0)+'%;background:#378ADD;"></div></div></div>' +
+        '<div class="bar-row"><span class="bar-label">Self-criticism</span><div class="bar-track"><div class="bar-f" style="width:'+pct(scores.selfcriticism||0)+'%;background:#D4537E;"></div></div></div>' +
+      '</div>' +
+
+      '<div class="result-section">' +
+        '<p class="rs-label">Your secondary pattern</p>' +
+        '<div class="rs-card" style="border-left:3px solid '+p2.accentColor+';border-radius:0;">' +
+          '<p class="rs-title">'+p2.name+'</p>' +
+          '<p class="rs-text">'+p2.summary+'</p>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="result-section">' +
+        '<p class="rs-label">Your real-time interrupt</p>' +
+        '<div class="rs-card" style="background:'+p.color+';">' +
+          '<p class="rs-title" style="color:'+p.textColor+';">60-second pattern interrupt</p>' +
+          '<p class="rs-text" style="color:'+p.textColor+';">'+p.interrupt+'</p>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="upsell">' +
+        '<p class="upsell-title">Ready to rewire this pattern?</p>' +
+        '<p class="upsell-sub">Your full VIS Protocol includes a personalized 30-day rewiring roadmap, daily pattern drills, and access to the Inside Out Performance coaching system.</p>' +
+        '<button onclick="sendPrompt(\'Tell me more about the VIS coaching program and next steps ↗\')" style="font-size:14px;padding:10px 22px;">Explore the VIS coaching program ↗</button>' +
+      '</div>' +
+    '</div>';
+  }
+}
+
+function startQ() { phase='questions'; currentQ=0; render(); }
+
+function selectOpt(i) {
+  var q = questions[currentQ];
+  answers[currentQ] = i;
+  var s = q.opts[i].scores;
+  for (var k in s) { scores[k] = (scores[k]||0) + s[k]; }
+  render();
+}
+
+function nextQ() { if (answers[currentQ]!==undefined && currentQ < questions.length-1) { currentQ++; render(); } }
+function prevQ() { if (currentQ > 0) { currentQ--; render(); } }
+function goGate() { phase='gate'; render(); }
+function goResult() { phase='result'; render(); }
+
+render();
+</script>
