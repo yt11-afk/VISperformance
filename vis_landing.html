@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIS — Discover the Pattern Holding Back Your Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0d0b;
+    --ink-muted: #4a4540;
+    --ink-faint: #9a918a;
+    --parchment: #f5f1ec;
+    --warm-white: #faf8f5;
+    --gold: #b89a6a;
+    --gold-light: #d4b98a;
+    --purple-deep: #2a1f3d;
+    --purple-mid: #534AB7;
+    --border: rgba(184,154,106,0.25);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--warm-white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.25rem 3rem;
+    background: linear-gradient(to bottom, rgba(15,13,11,0.95), transparent);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-cta {
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--warm-white);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1.4rem;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .nav-cta:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 70% 40%, rgba(83,74,183,0.12), transparent 70%),
+                radial-gradient(ellipse 40% 40% at 20% 80%, rgba(184,154,106,0.06), transparent 60%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+  .hero-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    max-width: 820px;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+  .hero-sub {
+    font-size: 1.05rem;
+    color: rgba(250,248,245,0.65);
+    max-width: 520px;
+    line-height: 1.75;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+  .hero-cta-group {
+    display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+  .btn-primary {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 1.1rem 2.5rem;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .hero-proof {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+  .hero-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--gold);
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 40px; height: 1px;
+    background: var(--gold);
+    margin: 0 auto;
+    opacity: 0.5;
+  }
+
+  /* PAIN SECTION */
+  .section { padding: 7rem 3rem; }
+  .section-inner { max-width: 1000px; margin: 0 auto; }
+
+  .pain-intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 300;
+    line-height: 1.4;
+    max-width: 660px;
+    margin-bottom: 3.5rem;
+    color: rgba(250,248,245,0.9);
+  }
+  .pain-intro em { font-style: italic; color: var(--gold-light); }
+
+  .recognition-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 4rem;
+  }
+  .recognition-item {
+    background: var(--ink);
+    padding: 1.75rem 2rem;
+    transition: background 0.3s;
+  }
+  .recognition-item:hover { background: rgba(83,74,183,0.08); }
+  .recognition-item p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: rgba(250,248,245,0.75);
+    line-height: 1.6;
+  }
+  .recognition-item p::before { content: '"'; color: var(--gold); font-size: 1.3rem; }
+  .recognition-item p::after { content: '"'; color: var(--gold); font-size: 1.3rem; }
+
+  /* WHAT IS VIS */
+  .what-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  @media (max-width: 700px) { .what-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+  .what-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+  }
+  .what-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+  .what-body {
+    color: rgba(250,248,245,0.6);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .contrast-table { width: 100%; }
+  .contrast-row {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgba(184,154,106,0.1);
+    font-size: 0.9rem;
+  }
+  .contrast-row:last-child { border-bottom: none; }
+  .contrast-not {
+    color: var(--ink-faint);
+    text-decoration: line-through;
+    flex: 1;
+  }
+  .contrast-is {
+    color: var(--gold-light);
+    flex: 1;
+    font-weight: 400;
+  }
+
+  /* HOW IT WORKS */
+  .section-dark { background: rgba(255,255,255,0.02); }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2.5rem;
+    margin-top: 3rem;
+  }
+  .step-item { position: relative; }
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem;
+    font-weight: 300;
+    color: rgba(184,154,106,0.15);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .step-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    color: var(--warm-white);
+  }
+  .step-body { font-size: 0.88rem; color: rgba(250,248,245,0.55); line-height: 1.7; }
+
+  /* PATTERNS PREVIEW */
+  .patterns-intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 300;
+    max-width: 600px;
+    margin-bottom: 3rem;
+    line-height: 1.4;
+  }
+  .pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 3.5rem;
+  }
+  .pattern-card {
+    background: var(--ink);
+    padding: 1.5rem;
+    transition: background 0.3s;
+  }
+  .pattern-card:hover { background: rgba(83,74,183,0.1); }
+  .pattern-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+  .pattern-desc {
+    font-size: 0.82rem;
+    color: rgba(250,248,245,0.45);
+    line-height: 1.5;
+  }
+
+  /* PROOF */
+  .proof-bar {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 0;
+    display: flex;
+    gap: 4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 5rem;
+  }
+  .proof-stat { text-align: center; }
+  .proof-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: var(--gold);
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .proof-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* FOUNDER */
+  .founder-section {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    align-items: start;
+    padding: 5rem 3rem;
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 700px) { .founder-section { grid-template-columns: 1fr; } }
+  .founder-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+  }
+  .founder-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 0.25rem;
+  }
+  .founder-title {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+  }
+  .founder-body {
+    font-size: 0.95rem;
+    color: rgba(250,248,245,0.6);
+    line-height: 1.85;
+  }
+  .founder-body p { margin-bottom: 1rem; }
+  .founder-body strong { color: var(--warm-white); font-weight: 400; }
+
+  /* CTA SECTION */
+  .cta-section {
+    text-align: center;
+    padding: 8rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(83,74,183,0.15), transparent 70%);
+    pointer-events: none;
+  }
+  .cta-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.15;
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+  }
+  .cta-sub {
+    font-size: 0.95rem;
+    color: rgba(250,248,245,0.55);
+    margin-bottom: 2.5rem;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .price-note {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    margin-top: 1rem;
+    letter-spacing: 0.05em;
+  }
+  .price-note span { color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    padding: 2.5rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer p {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+  footer a { color: var(--gold); text-decoration: none; font-size: 0.78rem; }
+
+  /* ANIMATION */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 600px) {
+    nav { padding: 1rem 1.5rem; }
+    .section { padding: 5rem 1.5rem; }
+    .hero { padding: 7rem 1.5rem 4rem; }
+    .founder-section { padding: 4rem 1.5rem; }
+    .cta-section { padding: 6rem 1.5rem; }
+    footer { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">VIS</a>
+  <a href="#assessment" class="nav-cta">Take the assessment</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Performance Pattern Intelligence</p>
+  <h1 class="hero-headline">
+    You already know what to do.<br>
+    <em>So why can't you do it<br>when it counts?</em>
+  </h1>
+  <p class="hero-sub">
+    The answer isn't more discipline, better technique, or another coach.<br>
+    It's a pattern you've been running for years — and never been able to name.
+  </p>
+  <div class="hero-cta-group">
+    <a href="#assessment" class="btn-primary">Discover your pattern</a>
+    <p class="hero-proof">
+      <span class="hero-number">8 questions</span> &nbsp;·&nbsp; 4 minutes &nbsp;·&nbsp; <span class="hero-number">$8.99</span> full report
+    </p>
+  </div>
+</section>
+
+<!-- RECOGNITION -->
+<section class="section">
+  <div class="section-inner">
+    <p class="pain-intro reveal">
+      High performers don't fail because of <em>lack of effort.</em><br>
+      They fail because of invisible patterns — running on autopilot in the exact moments that matter most.
+    </p>
+
+    <div class="recognition-list reveal">
+      <div class="recognition-item">
+        <p>I know exactly what I should do in that moment. I just can't make myself do it.</p>
+      </div>
+      <div class="recognition-item">
+        <p>I was up 5-2 in the third set and my brain just turned on me.</p>
+      </div>
+      <div class="recognition-item">
+        <p>I'm great at the strategy. It's the moment-to-moment execution where I fall apart.</p>
+      </div>
+      <div class="recognition-item">
+        <p>I've done therapy. I've done coaching. The same pattern keeps showing up.</p>
+      </div>
+      <div class="recognition-item">
+        <p>I perform brilliantly when nothing's at stake. High stakes, I disappear.</p>
+      </div>
+      <div class="recognition-item">
+        <p>Every time I get close to winning, I find a way to give it back.</p>
+      </div>
+    </div>
+
+    <p class="pain-intro reveal" style="font-size: clamp(1.2rem, 2vw, 1.6rem); max-width: 580px;">
+      If any of these landed — you're not broken.<br>
+      You're running a pattern that has a name, a trigger, and an interrupt.
+    </p>
+  </div>
+</section>
+
+<!-- WHAT IS VIS -->
+<section class="section section-dark">
+  <div class="section-inner">
+    <div class="what-grid">
+      <div class="reveal">
+        <p class="what-label">What VIS is</p>
+        <h2 class="what-title">Mental performance infrastructure. Not another self-help product.</h2>
+        <p class="what-body">VIS is a performance pattern assessment built on the Inside Out framework — a decade of elite coaching work grounded in Jungian pattern theory, behavioral neuroscience, and real-world performance psychology.</p>
+        <p class="what-body">In 8 questions, it identifies the invisible behavioral loop that limits your performance at the identity level — not just your technique, fitness, or strategy.</p>
+      </div>
+      <div class="reveal">
+        <p class="what-label">What it is not</p>
+        <div class="contrast-table">
+          <div class="contrast-row">
+            <span class="contrast-not">A meditation app</span>
+            <span class="contrast-is">A pattern interrupt system</span>
+          </div>
+          <div class="contrast-row">
+            <span class="contrast-not">A journaling exercise</span>
+            <span class="contrast-is">A precision diagnosis</span>
+          </div>
+          <div class="contrast-row">
+            <span class="contrast-not">Therapy or counseling</span>
+            <span class="contrast-is">Performance engineering</span>
+          </div>
+          <div class="contrast-row">
+            <span class="contrast-not">Generic self-help</span>
+            <span class="contrast-is">Identity-level rewiring</span>
+          </div>
+          <div class="contrast-row">
+            <span class="contrast-not">Motivational content</span>
+            <span class="contrast-is">Measurable, repeatable tools</span>
+          </div>
+          <div class="contrast-row">
+            <span class="contrast-not">One-size-fits-all advice</span>
+            <span class="contrast-is">Your specific pattern, named</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="section-inner">
+    <p class="what-label reveal">How it works</p>
+    <h2 class="what-title reveal" style="max-width: 500px; margin-bottom: 0;">Four minutes. One pattern. Complete clarity.</h2>
+    <div class="steps-grid">
+      <div class="step-item reveal">
+        <div class="step-num">01</div>
+        <p class="step-title">Answer 8 questions</p>
+        <p class="step-body">Precisely designed scenarios drawn from real performance moments — in sport, business, and under pressure. No generic personality questions.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">02</div>
+        <p class="step-title">See your pattern revealed</p>
+        <p class="step-body">The moment most clients describe as "someone finally put words to something I've felt for years." Your dominant pattern, named and anatomized.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">03</div>
+        <p class="step-title">Get your interrupt protocol</p>
+        <p class="step-body">A 60-second real-time intervention built for your specific pattern. Use it before your next high-stakes moment — today, not after months of coaching.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">04</div>
+        <p class="step-title">Receive your rewiring roadmap</p>
+        <p class="step-body">A personalized framework for dismantling the pattern at the identity level — not managing symptoms, but changing the underlying architecture.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PATTERNS -->
+<section class="section section-dark">
+  <div class="section-inner">
+    <p class="what-label reveal">The 8 performance patterns</p>
+    <p class="patterns-intro reveal">Eight distinct patterns. One is running your performance right now — whether you're aware of it or not.</p>
+    <div class="pattern-grid reveal">
+      <div class="pattern-card">
+        <p class="pattern-name">The Pressure Collapse</p>
+        <p class="pattern-desc">Triggered by elevated stakes. Expressed as physical tightening and rushed decisions.</p>
+      </div>
+      <div class="pattern-card">
+        <p class="pattern-name">The Approval Authority</p>
+        <p class="pattern-desc">Performing for an invisible audience. Hesitation when observed or judged.</p>
+      </div>
+      <div class="pattern-card">
+        <p class="pattern-name">The Replay Loop</p>
+        <p class="pattern-desc">Error correction that never turns off. Replaying the past during current performance.</p>
+      </div>
+      <div class="pattern-card">
+        <p class="pattern-name">The Self-Sabotage Threshold</p>
+        <p class="pattern-desc">An unconscious ceiling. Unforced errors when proximity to winning becomes real.</p>
+      </div>
+      <div class="pattern-card">
+        <p class="pattern-name">The State Dependency</p>
+        <p class="pattern-desc">Performance held hostage to daily emotional weather. No repeatable anchor.</p>
+      </div>
+      <div class="pattern-card">
+        <p class="pattern-name">The Avoidance Shield</p>
+        <p class="pattern-desc">Not fully committing so failure always has an excuse. Feels like strategy.</p>
+      </div>
+      <div class="pattern-card">
+        <p class="pattern-name">The Analytical Override</p>
+        <p class="pattern-desc">Intelligence hijacking instinct at the exact moment the body needs to take over.</p>
+      </div>
+      <div class="pattern-card">
+        <p class="pattern-name">The Inner Judge</p>
+        <p class="pattern-desc">A harsh internal commentator who treats every mistake as a verdict on identity.</p>
+      </div>
+    </div>
+
+    <!-- PROOF BAR -->
+    <div class="proof-bar reveal">
+      <div class="proof-stat">
+        <span class="proof-number">8</span>
+        <span class="proof-label">Questions</span>
+      </div>
+      <div class="proof-stat">
+        <span class="proof-number">4</span>
+        <span class="proof-label">Minutes</span>
+      </div>
+      <div class="proof-stat">
+        <span class="proof-number">$8.99</span>
+        <span class="proof-label">Full report</span>
+      </div>
+      <div class="proof-stat">
+        <span class="proof-number">1</span>
+        <span class="proof-label">Pattern named</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<div class="founder-section">
+  <div class="reveal">
+    <p class="founder-tag">The inside out method</p>
+    <p class="founder-name">Inside Out<br>Performance</p>
+    <p class="founder-title" style="margin-top: 0.5rem;">10+ years of elite coaching</p>
+  </div>
+  <div class="founder-body reveal">
+    <p>I spent a decade as a performance coach — first on the tennis court, then with executives, founders, and competitive athletes who had every external advantage but kept running into the same invisible wall.</p>
+    <p>The pattern was always the same. <strong>It wasn't technique. It wasn't fitness. It wasn't strategy.</strong> It was an internal loop — a behavioral pattern rooted in identity — that activated in high-stakes moments and quietly dismantled everything they'd built.</p>
+    <p>Most coaches never name it. Therapy circles around it. Self-help books describe the symptoms without identifying the source.</p>
+    <p><strong>VIS names it. In four minutes. For $8.99.</strong></p>
+    <p>Because the moment you can name what's happening inside you — the trigger, the loop, the belief underneath — you stop being controlled by it.</p>
+  </div>
+</div>
+
+<!-- FINAL CTA -->
+<section class="cta-section" id="assessment">
+  <h2 class="cta-headline reveal">
+    The pattern has a name.<br>
+    <em>It's time to hear it.</em>
+  </h2>
+  <p class="cta-sub reveal">8 questions. 4 minutes. Complete pattern anatomy delivered immediately.</p>
+  <div class="reveal">
+    <a href="YOUR_ASSESSMENT_URL_HERE" class="btn-primary">Begin the assessment</a>
+    <p class="price-note">Full report unlocked for <span>$8.99</span> · Instant delivery · No subscription</p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 VIS Performance. Inside Out Method.</p>
+  <div style="display:flex; gap: 1.5rem;">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="mailto:hello@vismethod.com">Contact</a>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
